@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}PocketSmart AI{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="/">💰 PocketSmart <span>AI</span></a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/testimonials">Testimonials</a>
+      {% if user %}
+        <a href="/dashboard">Dashboard</a>
+        <a href="/home-planner">Home Planner</a>
+        <a href="/party-planner">Party Planner</a>
+        <a href="/jewelry-planner">Jewelry Planner</a>
+        <a href="/history">History</a>
+        <a href="/logout" class="btn-ghost">Logout ({{ user.username }})</a>
+      {% else %}
+        <a href="/login">Login</a>
+        <a href="/register" class="btn-primary">Sign Up</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>PocketSmart AI &mdash; Smart Budget &amp; Recommendation Assistant. Built with FastAPI + Gemini.</p>
+    <p class="footer-links">
+      Powered by recommendations across
+      <span>Amazon</span> · <span>Flipkart</span> · <span>IKEA</span> ·
+      <span>Swiggy</span> · <span>Zomato</span> · <span>OYO</span>
+    </p>
+  </footer>
+
+  <script src="/static/js/main.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

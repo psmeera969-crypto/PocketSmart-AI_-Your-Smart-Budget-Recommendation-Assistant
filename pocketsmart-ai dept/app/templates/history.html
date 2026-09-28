@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}History - PocketSmart AI{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>📜 Recommendation History</h1>
+  <p>Review or reuse your past budget plans across Home, Party, and Jewelry.</p>
+</section>
+
+{% if entries %}
+<div class="history-list">
+  {% for entry in entries %}
+  <details class="history-item history-item-expandable">
+    <summary>
+      <strong>{{ entry.category | capitalize }}</strong>
+      <span class="muted"> &mdash; {{ entry.created_at[:19].replace('T', ' ') }} UTC</span>
+      <span class="badge {{ 'badge-ok' if entry.result.within_budget else 'badge-warn' }}">
+        {{ "within budget" if entry.result.within_budget else "over budget" }}
+      </span>
+    </summary>
+    <div class="history-detail">
+      <p><strong>Budget:</strong> {{ entry.result.total_budget }} &nbsp;
+         <strong>Estimated cost:</strong> {{ entry.result.total_estimated_cost }} &nbsp;
+         <strong>Source:</strong> {{ entry.result.source }}</p>
+      <p class="muted">{{ entry.result.summary }}</p>
+      <div class="results-grid">
+        {% for item in entry.result['items'] %}
+        <article class="result-card">
+          <h3>{{ item.item_name }}</h3>
+          <p class="muted">{{ item.category }} &middot; {{ item.platform }}</p>
+          <p>{{ item.description }}</p>
+          <p class="price">{{ item.estimated_price }} {{ item.currency }}</p>
+          <a href="{{ item.search_link }}" target="_blank" rel="noopener">View on {{ item.platform }} →</a>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </details>
+  {% endfor %}
+</div>
+{% else %}
+<p class="muted">No recommendations yet. Head to a planner to get started!</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Jewelry Planner - PocketSmart AI{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>💎 Jewelry Budget Planner</h1>
+  <p>Set your budget and occasion, optionally upload an outfit photo, and get style- &amp; color-matched jewelry picks.</p>
+</section>
+
+<form id="jewelry-form" class="form planner-form" enctype="multipart/form-data">
+  <div class="form-row">
+    <label>Total Budget
+      <input type="number" name="budget" min="1" step="1" required />
+    </label>
+    <label>Currency
+      <select name="currency">
+        <option value="INR" selected>INR (₹)</option>
+        <option value="USD">USD ($)</option>
+      </select>
+    </label>
+    <label>Occasion
+      <select name="occasion" required>
+        <option value="Wedding">Wedding</option>
+        <option value="Engagement">Engagement</option>
+        <option value="Festival">Festival</option>
+        <option value="Party">Party</option>
+        <option value="Everyday">Everyday</option>
+      </select>
+    </label>
+  </div>
+  <div class="form-row">
+    <label>Style Preference
+      <select name="style_preference">
+        <option value="">No preference</option>
+        <option>Traditional</option>
+        <option>Modern</option>
+        <option>Minimal</option>
+        <option>Statement</option>
+      </select>
+    </label>
+    <label>Metal Preference
+      <select name="metal_preference">
+        <option value="">No preference</option>
+        <option>Gold</option>
+        <option>Silver</option>
+        <option>Platinum</option>
+        <option>Diamond</option>
+      </select>
+    </label>
+  </div>
+
+  <label>Preferred Platforms
+    <div class="checkbox-row">
+      <label><input type="checkbox" name="platforms" value="Amazon" checked /> Amazon</label>
+      <label><input type="checkbox" name="platforms" value="Flipkart" checked /> Flipkart</label>
+    </div>
+  </label>
+
+  <label>Outfit Image (optional)
+    <input type="file" name="outfit_image" accept="image/*" />
+  </label>
+
+  <button type="submit" class="btn-primary btn-lg">Get Recommendations</button>
+</form>
+
+<div id="status" class="status"></div>
+<section id="results" class="results-grid"></section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('jewelry-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const platforms = [...form.querySelectorAll('input[name=platforms]:checked')].map(el => el.value);
+  const fd = new FormData();
+  fd.append('budget', form.budget.value);
+  fd.append('currency', form.currency.value);
+  fd.append('occasion', form.occasion.value);
+  fd.append('style_preference', form.style_preference.value || '');
+  fd.append('metal_preference', form.metal_preference.value || '');
+  fd.append('preferred_platforms', (platforms.length ? platforms : ['Amazon', 'Flipkart']).join(','));
+  if (form.outfit_image.files[0]) {
+    fd.append('outfit_image', form.outfit_image.files[0]);
+  }
+  await PocketSmart.submitPlanner('/generate-jewelry', fd, true);
+});
+</script>
+{% endblock %}

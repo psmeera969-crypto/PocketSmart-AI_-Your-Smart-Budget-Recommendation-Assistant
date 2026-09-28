@@ -1,0 +1,20 @@
+# Version floors (not exact pins) so pip resolves to whatever release
+# already ships a prebuilt wheel for your Python version/OS. Pinning
+# exact old versions (e.g. pydantic-core 2.9.x) is what forces pip to
+# compile from source (needs Rust/maturin + MSVC Build Tools) on newer
+# Python installs - avoid re-pinning these unless you also pin your
+# Python version to match.
+fastapi>=0.115
+uvicorn[standard]>=0.30
+jinja2>=3.1
+python-multipart>=0.0.9
+python-dotenv>=1.0
+passlib[bcrypt]>=1.7.4
+# passlib 1.7.x breaks with bcrypt 5.x (password hashing fails at
+# register/login), so keep bcrypt on the 4.x line.
+bcrypt>=4.0.1,<5
+python-jose[cryptography]>=3.3
+google-generativeai>=0.8
+pydantic>=2.9
+email-validator>=2.2
+Pillow>=10.4

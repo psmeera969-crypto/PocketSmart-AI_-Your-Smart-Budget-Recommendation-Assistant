@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Home Interior Planner - PocketSmart AI{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>🏠 Home Interior Budget Planner</h1>
+  <p>Add your rooms and quantities, set a budget, and get tailored suggestions across IKEA, Amazon, and Flipkart.</p>
+</section>
+
+<form id="home-form" class="form planner-form">
+  <div class="form-row">
+    <label>Total Budget
+      <input type="number" name="budget" min="1" step="1" required />
+    </label>
+    <label>Currency
+      <select name="currency">
+        <option value="INR" selected>INR (₹)</option>
+        <option value="USD">USD ($)</option>
+      </select>
+    </label>
+    <label>Style Preference
+      <select name="style_preference">
+        <option value="">No preference</option>
+        <option>Modern</option>
+        <option>Traditional</option>
+        <option>Minimalist</option>
+        <option>Scandinavian</option>
+        <option>Industrial</option>
+      </select>
+    </label>
+  </div>
+
+  <h3>Rooms</h3>
+  <div id="rooms-container"></div>
+  <button type="button" id="add-room" class="btn-ghost">+ Add Room</button>
+
+  <label>Preferred Platforms
+    <div class="checkbox-row">
+      <label><input type="checkbox" name="platforms" value="Amazon" checked /> Amazon</label>
+      <label><input type="checkbox" name="platforms" value="IKEA" checked /> IKEA</label>
+      <label><input type="checkbox" name="platforms" value="Flipkart" checked /> Flipkart</label>
+    </div>
+  </label>
+
+  <button type="submit" class="btn-primary btn-lg">Get Recommendations</button>
+</form>
+
+<div id="status" class="status"></div>
+<section id="results" class="results-grid"></section>
+
+<template id="room-row-template">
+  <div class="room-row">
+    <input type="text" class="room_type" placeholder="Room type (e.g. Living Room)" required />
+    <input type="number" class="lights" placeholder="Lights" min="0" value="0" />
+    <input type="number" class="ceiling_fans" placeholder="Ceiling fans" min="0" value="0" />
+    <input type="number" class="dining_tables" placeholder="Dining tables" min="0" value="0" />
+    <input type="number" class="sofas" placeholder="Sofas" min="0" value="0" />
+    <input type="number" class="wardrobes" placeholder="Wardrobes" min="0" value="0" />
+    <button type="button" class="btn-remove-row">✕</button>
+  </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function addRoomRow(prefill) {
+  const container = document.getElementById('rooms-container');
+  const tpl = document.getElementById('room-row-template');
+  const node = tpl.content.cloneNode(true);
+  const row = node.querySelector('.room-row');
+  if (prefill) {
+    row.querySelector('.room_type').value = prefill.room_type || '';
+    row.querySelector('.lights').value = prefill.lights || 0;
+    row.querySelector('.ceiling_fans').value = prefill.ceiling_fans || 0;
+    row.querySelector('.dining_tables').value = prefill.dining_tables || 0;
+    row.querySelector('.sofas').value = prefill.sofas || 0;
+    row.querySelector('.wardrobes').value = prefill.wardrobes || 0;
+  }
+  row.querySelector('.btn-remove-row').addEventListener('click', () => row.remove());
+  container.appendChild(node);
+}
+document.getElementById('add-room').addEventListener('click', () => addRoomRow());
+addRoomRow({ room_type: 'Living Room', lights: 3, ceiling_fans: 1, sofas: 1 });
+addRoomRow({ room_type: 'Bedroom', lights: 2, ceiling_fans: 1, wardrobes: 1 });
+
+document.getElementById('home-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const rooms = [...document.querySelectorAll('.room-row')].map(row => ({
+    room_type: row.querySelector('.room_type').value,
+    lights: Number(row.querySelector('.lights').value || 0),
+    ceiling_fans: Number(row.querySelector('.ceiling_fans').value || 0),
+    dining_tables: Number(row.querySelector('.dining_tables').value || 0),
+    sofas: Number(row.querySelector('.sofas').value || 0),
+    wardrobes: Number(row.querySelector('.wardrobes').value || 0),
+  }));
+  const platforms = [...form.querySelectorAll('input[name=platforms]:checked')].map(el => el.value);
+  const body = {
+    budget: Number(form.budget.value),
+    currency: form.currency.value,
+    style_preference: form.style_preference.value || null,
+    rooms,
+    preferred_platforms: platforms.length ? platforms : ['Amazon', 'IKEA', 'Flipkart'],
+  };
+  await PocketSmart.submitPlanner('/generate-home', body, false);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}PocketSmart AI - Smart Budget & Recommendation Assistant{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Plan smarter. Spend wiser. <span class="highlight">PocketSmart AI.</span></h1>
+  <p>
+    A GenAI-powered assistant that turns your budget into personalized,
+    ready-to-shop recommendations for <strong>Home Interiors</strong>,
+    <strong>Parties</strong>, and <strong>Jewelry</strong> &mdash; sourced
+    across Amazon, Flipkart, IKEA, Swiggy, Zomato, and OYO.
+  </p>
+  {% if user %}
+    <a class="btn-primary btn-lg" href="/dashboard">Go to Dashboard</a>
+  {% else %}
+    <a class="btn-primary btn-lg" href="/register">Get Started Free</a>
+    <a class="btn-ghost btn-lg" href="/login">I already have an account</a>
+  {% endif %}
+</section>
+
+<section class="cards-grid">
+  <article class="feature-card">
+    <h2>🏠 Home Interior Planner</h2>
+    <p>Enter your budget and room details (lights, fans, tables, sofas) and
+    get a cost-balanced shopping list styled to your taste.</p>
+    <a href="{{ '/home-planner' if user else '/register' }}">Try it →</a>
+  </article>
+  <article class="feature-card">
+    <h2>🎉 Party Planner</h2>
+    <p>Tell us your event type, guest count, and budget &mdash; we allocate
+    spend across catering, decor, entertainment, and venue.</p>
+    <a href="{{ '/party-planner' if user else '/register' }}">Try it →</a>
+  </article>
+  <article class="feature-card">
+    <h2>💎 Jewelry Planner</h2>
+    <p>Share your occasion, style, and (optionally) an outfit photo &mdash;
+    Gemini matches jewelry that fits both your look and your budget.</p>
+    <a href="{{ '/jewelry-planner' if user else '/register' }}">Try it →</a>
+  </article>
+</section>
+
+<section class="how-it-works">
+  <h2>How it works</h2>
+  <ol>
+    <li><strong>Tell us your budget</strong> and the details of what you're planning.</li>
+    <li><strong>Gemini analyzes</strong> your inputs (and outfit image, for jewelry) in real time.</li>
+    <li><strong>Get curated picks</strong> with live search links across trusted platforms.</li>
+    <li><strong>Revisit anytime</strong> from your personal recommendation history.</li>
+  </ol>
+</section>
+{% endblock %}

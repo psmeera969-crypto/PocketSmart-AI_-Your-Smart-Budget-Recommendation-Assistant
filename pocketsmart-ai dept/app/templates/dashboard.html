@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - PocketSmart AI{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>Welcome, {{ user.full_name }} 👋</h1>
+  <p>Pick a planner below, or jump back into a recent recommendation.</p>
+</section>
+
+<section class="cards-grid">
+  <a class="feature-card" href="/home-planner">
+    <h2>🏠 Home Interior Planner</h2>
+    <p>Furniture, lighting &amp; decor recommendations for your rooms.</p>
+  </a>
+  <a class="feature-card" href="/party-planner">
+    <h2>🎉 Party Planner</h2>
+    <p>Catering, decoration &amp; entertainment allocations for your event.</p>
+  </a>
+  <a class="feature-card" href="/jewelry-planner">
+    <h2>💎 Jewelry Planner</h2>
+    <p>Occasion &amp; outfit-matched jewelry picks within budget.</p>
+  </a>
+</section>
+
+<section>
+  <div class="section-header-row">
+    <h2>Recent recommendations</h2>
+    <a href="/history">View full history →</a>
+  </div>
+  {% if recent %}
+  <div class="history-list">
+    {% for entry in recent %}
+    <div class="history-item">
+      <div>
+        <strong>{{ entry.category | capitalize }}</strong>
+        <span class="muted"> &mdash; {{ entry.created_at[:10] }}</span>
+      </div>
+      <div>Budget: {{ entry.result.total_budget }} {{ entry.input.currency or "INR" }} &nbsp;|&nbsp;
+        Est. cost: {{ entry.result.total_estimated_cost }}
+        <span class="badge {{ 'badge-ok' if entry.result.within_budget else 'badge-warn' }}">
+          {{ "within budget" if entry.result.within_budget else "over budget" }}
+        </span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted">No recommendations yet &mdash; try one of the planners above!</p>
+  {% endif %}
+</section>
+{% endblock %}

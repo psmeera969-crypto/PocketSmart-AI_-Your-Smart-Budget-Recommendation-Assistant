@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Party Planner - PocketSmart AI{% endblock %}
+{% block content %}
+<section class="page-header">
+  <h1>🎉 AI-Based Party Budget Planner</h1>
+  <p>Tell us about your event and we'll allocate your budget across catering, decor, entertainment, and venue/accommodation.</p>
+</section>
+
+<form id="party-form" class="form planner-form">
+  <div class="form-row">
+    <label>Total Budget
+      <input type="number" name="budget" min="1" step="1" required />
+    </label>
+    <label>Currency
+      <select name="currency">
+        <option value="INR" selected>INR (₹)</option>
+        <option value="USD">USD ($)</option>
+      </select>
+    </label>
+    <label>Guest Count
+      <input type="number" name="guest_count" min="1" required />
+    </label>
+  </div>
+  <div class="form-row">
+    <label>Event Type
+      <select name="event_type" required>
+        <option value="Birthday">Birthday</option>
+        <option value="Wedding">Wedding</option>
+        <option value="Corporate">Corporate</option>
+        <option value="Anniversary">Anniversary</option>
+        <option value="Baby Shower">Baby Shower</option>
+      </select>
+    </label>
+    <label>Venue City (optional)
+      <input type="text" name="venue_city" placeholder="e.g. Coimbatore" />
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" name="needs_accommodation" /> Need accommodation (OYO)?
+    </label>
+  </div>
+
+  <label>Preferred Platforms
+    <div class="checkbox-row">
+      <label><input type="checkbox" name="platforms" value="Swiggy" checked /> Swiggy</label>
+      <label><input type="checkbox" name="platforms" value="Zomato" checked /> Zomato</label>
+      <label><input type="checkbox" name="platforms" value="OYO" checked /> OYO</label>
+    </div>
+  </label>
+
+  <label>Notes (optional)
+    <textarea name="notes" rows="2" placeholder="Anything else the assistant should know?"></textarea>
+  </label>
+
+  <button type="submit" class="btn-primary btn-lg">Get Recommendations</button>
+</form>
+
+<div id="status" class="status"></div>
+<section id="results" class="results-grid"></section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('party-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const platforms = [...form.querySelectorAll('input[name=platforms]:checked')].map(el => el.value);
+  const body = {
+    budget: Number(form.budget.value),
+    currency: form.currency.value,
+    guest_count: Number(form.guest_count.value),
+    event_type: form.event_type.value,
+    venue_city: form.venue_city.value || null,
+    needs_accommodation: form.needs_accommodation.checked,
+    preferred_platforms: platforms.length ? platforms : ['Swiggy', 'Zomato', 'OYO'],
+    notes: form.notes.value || null,
+  };
+  await PocketSmart.submitPlanner('/generate-party', body, false);
+});
+</script>
+{% endblock %}
